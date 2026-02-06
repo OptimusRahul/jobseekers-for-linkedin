@@ -1,0 +1,84 @@
+JOHN DOE
+
+Senior Software Engineer
+
+Email: john.doe@example.com
+Phone: +1 (234) 567-8900
+LinkedIn: linkedin.com/in/johndoe
+GitHub: github.com/johndoe
+
+PROFESSIONAL SUMMARY
+
+Experienced Senior Software Engineer with 6+ years of expertise in designing and implementing scalable backend systems. Specialized in Python, FastAPI, and microservices architecture. Proven track record of optimizing performance, mentoring teams, and delivering high-quality solutions.
+
+EXPERIENCE
+
+Senior Software Engineer | Tech Corp | San Francisco, CA
+March 2020 - Present
+
+• Led development of microservices architecture using Python and FastAPI, serving 10M+ requests/day
+• Implemented CI/CD pipelines with Docker and Kubernetes, reducing deployment time by 60%
+• Optimized PostgreSQL database queries, improving API response time from 500ms to 80ms
+• Mentored 5 junior developers, conducting code reviews and technical training sessions
+• Built RESTful APIs with comprehensive documentation using OpenAPI/Swagger
+• Integrated vector databases (pgvector) for AI-powered search functionality
+• Technologies: Python, FastAPI, PostgreSQL, Redis, Docker, Kubernetes, AWS
+
+Software Engineer | StartupXYZ | Palo Alto, CA
+June 2018 - February 2020
+
+• Developed RESTful APIs serving 1M+ daily active users
+• Built data processing pipelines handling 100GB+ of data daily
+• Optimized database queries improving overall system performance by 40%
+• Implemented caching strategies using Redis, reducing database load by 50%
+• Collaborated with frontend team to design and implement new features
+• Technologies: Python, Django, Flask, PostgreSQL, MongoDB, Redis, Docker
+
+Junior Software Engineer | WebSolutions Inc. | San Jose, CA
+August 2016 - May 2018
+
+• Developed web applications using Python and Django framework
+• Implemented user authentication and authorization systems
+• Built admin dashboards for data management and analytics
+• Wrote unit tests achieving 85% code coverage
+• Technologies: Python, Django, JavaScript, jQuery, MySQL, Git
+
+TECHNICAL SKILLS
+
+Languages: Python, JavaScript, SQL, Go, Bash
+Frameworks: FastAPI, Django, Flask, React
+Databases: PostgreSQL, MySQL, MongoDB, Redis, pgvector
+Cloud & DevOps: AWS (EC2, S3, Lambda, RDS), Docker, Kubernetes, Git, CI/CD
+Tools: Git, GitHub Actions, Jenkins, Nginx, Postman
+AI/ML: OpenAI API, Vector Databases, LangChain
+
+EDUCATION
+
+Bachelor of Science in Computer Science
+University of Technology, California
+Graduated: May 2016
+GPA: 3.8/4.0
+
+CERTIFICATIONS
+
+• AWS Certified Solutions Architect - Associate (2022)
+• Certified Kubernetes Administrator (CKA) (2021)
+
+PROJECTS
+
+AI-Powered Job Email Generator
+• Built backend system using FastAPI and PostgreSQL with pgvector for resume matching
+• Integrated OpenAI API for generating personalized job application emails
+• Implemented vector similarity search for matching resumes to job descriptions
+
+E-commerce Platform API
+• Designed and developed RESTful API for e-commerce platform handling 500k+ transactions/month
+• Implemented payment gateway integration with Stripe
+• Built inventory management system with real-time updates
+
+ACHIEVEMENTS
+
+• Reduced API latency by 75% through database optimization and caching strategies
+• Led migration from monolithic architecture to microservices, improving system scalability
+• Contributed to 3 open-source projects with 500+ GitHub stars combined
+• Published technical blog posts with 10k+ views on backend optimization techniques
