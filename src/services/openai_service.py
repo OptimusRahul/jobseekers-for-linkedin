@@ -2,9 +2,9 @@
 import json
 from typing import List, Dict
 
-from lib.openai_client import get_openai_client
-from config import config
-from prompts.email_prompt import create_email_prompt
+from ..lib.openai_client import get_openai_client
+from ..config import config
+from ..prompts.email_prompt import create_email_prompt
 
 def create_embedding(text: str) -> List[float]:
     """

@@ -2,8 +2,8 @@
 from typing import List, Optional, Dict
 import uuid
 
-from lib.postgres import get_db
-from models.resume import Resume
+from ..lib.postgres import get_db
+from ..models.resume import Resume
 
 def store_resume_embedding(user_id: str, resume_text: str, embedding: List[float]) -> None:
     """

@@ -6,10 +6,10 @@ import uuid
 import logging
 import traceback
 
-from config import config
-from services import user_service, openai_service, vector_service, email_service
-from models.schemas import RegisterRequest, RegisterResponse, UploadResumeResponse, GenerateEmailRequest, GenerateEmailResponse
-from utils.file_parser import parse_resume_file, validate_file_size, get_supported_extensions
+from .config import config
+from .services import register_user, get_user_by_phone, get_user_by_id, create_embedding, generate_email as generate_email_service, store_resume_embedding, get_resume_by_user_id, search_similar_resume
+from .models.schemas import RegisterRequest, RegisterResponse, UploadResumeResponse, GenerateEmailRequest, GenerateEmailResponse
+from .utils.file_parser import parse_resume_file, validate_file_size, get_supported_extensions
 
 # Configure logging
 logging.basicConfig(
@@ -35,7 +35,7 @@ async def startup_event():
     logger.info("=" * 60)
     
     # Check database connection
-    fromlib.postgres import check_database_connection, check_pgvector_extension
+    from .lib.postgres import check_database_connection, check_pgvector_extension
     
     if check_database_connection():
         logger.info("Database: Connected to PostgreSQL")
@@ -56,7 +56,7 @@ def read_root():
 @app.get("/health")
 def health_check():
     """Detailed health check including database status."""
-    fromlib.postgres import check_database_connection, check_pgvector_extension
+    from .lib.postgres import check_database_connection, check_pgvector_extension
     
     db_connected = check_database_connection()
     pgvector_enabled = check_pgvector_extension() if db_connected else False
@@ -76,7 +76,7 @@ def health_check():
 def register_user(request: RegisterRequest):
     """Register a new user with phone number."""
     try:
-        user_id = user_service.register_user(
+        user_id = register_user(
             phone_number=request.phone_number,
             name=request.name,
             email=request.email
@@ -106,7 +106,7 @@ async def upload_resume(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid user_id format")
         
-        user = user_service.get_user_by_id(user_id)
+        user = get_user_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
@@ -135,10 +135,10 @@ async def upload_resume(
             raise HTTPException(status_code=400, detail=str(e))
         
         # Generate embedding for resume
-        embedding = openai_service.create_embedding(resume_text)
+        embedding = create_embedding(resume_text)
         
         # Store in PostgreSQL with pgvector
-        vector_service.store_resume_embedding(
+        store_resume_embedding(
             user_id=user_id,
             resume_text=resume_text,
             embedding=embedding
@@ -160,7 +160,7 @@ async def upload_resume(
 def generate_email(request: GenerateEmailRequest):
     """Generate personalized job application email."""
     try:
-        result = email_service.generate_email(
+        result = generate_email_service(
             phone_number=request.phone_number,
             job_description=request.job_description
         )

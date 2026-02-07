@@ -629,7 +629,7 @@ print(f"\nBody:\n{result['body']}")
 - Verify `.env` file exists with all required variables
 - Check PostgreSQL is running: `psql -U postgres`
 - Verify pgvector extension is installed
-- Run: `uv run python -c "from src.config import config; config.validate()"`
+- Run: `uv run python -c "from config import config; config.validate()"`
 
 ### "User not found" error
 

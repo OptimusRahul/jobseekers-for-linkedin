@@ -1,0 +1,14 @@
+Act as an expert in Gen AI
+
+Product Overview:
+There is an Chrome Extension which will be extracting the HR's email and phone(optional), job description. We need to build backend for it, we need to have a user which registers via phone number.
+We need to store user resume, work_experience and other usefull information in a vector database. There will be an /gen-email which will take JOB DESCRIPTION and user number and now it will fetch the user info from the vector embeddings related to JD.
+Now we need to make an LLM call which will be taking JD and User Info as input and generate an a customized mail for the user.
+
+Tech Stack:
+- Pyhton
+- FastAPI
+- Vector DB (Firebase)
+- Postgres to store HR related info
+
+We need to build a system prompt which needs to send to LLM and generate a customized email.
