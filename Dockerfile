@@ -20,6 +20,10 @@ RUN pip install --upgrade pip && \
 # Copy the entire project
 COPY . .
 
+# Copy and set permissions for startup script
+COPY start.sh .
+RUN chmod +x start.sh
+
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app/src
@@ -27,5 +31,5 @@ ENV PYTHONPATH=/app/src
 # Expose port
 EXPOSE 8000
 
-# Run migrations then start the app (Railway will provide $PORT)
-CMD ["sh", "-c", "alembic upgrade head && cd src && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Run startup script
+CMD ["./start.sh"]
