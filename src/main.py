@@ -6,10 +6,10 @@ import uuid
 import logging
 import traceback
 
-from .config import config
-from .services import register_user, get_user_by_phone, get_user_by_id, create_embedding, generate_email as generate_email_service, store_resume_embedding, get_resume_by_user_id, search_similar_resume
-from .models.schemas import RegisterRequest, RegisterResponse, UploadResumeResponse, GenerateEmailRequest, GenerateEmailResponse
-from .utils.file_parser import parse_resume_file, validate_file_size, get_supported_extensions
+from src.config import config
+from src.services import register_user, get_user_by_phone, get_user_by_id, create_embedding, generate_email as generate_email_service, store_resume_embedding, get_resume_by_user_id, search_similar_resume
+from src.models.schemas import RegisterRequest, RegisterResponse, UploadResumeResponse, GenerateEmailRequest, GenerateEmailResponse
+from src.utils.file_parser import parse_resume_file, validate_file_size, get_supported_extensions
 
 # Configure logging
 logging.basicConfig(

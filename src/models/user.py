@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 
-from .base import Base
+from src.models.base import Base
 
 class User(Base):
     """User model for PostgreSQL."""

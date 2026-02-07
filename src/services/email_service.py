@@ -1,7 +1,7 @@
 """Email generation orchestration service."""
 from typing import Dict
 
-from ..services import user_service, openai_service, vector_service
+from src.services import user_service, openai_service, vector_service
 
 def generate_email(phone_number: str, job_description: str) -> Dict[str, str]:
     """
