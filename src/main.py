@@ -6,10 +6,10 @@ import uuid
 import logging
 import traceback
 
-from src.config import config
-from src.services import user_service, openai_service, vector_service, email_service
-from src.models.schemas import RegisterRequest, RegisterResponse, UploadResumeResponse, GenerateEmailRequest, GenerateEmailResponse
-from src.utils.file_parser import parse_resume_file, validate_file_size, get_supported_extensions
+from config import config
+from services import user_service, openai_service, vector_service, email_service
+from models.schemas import RegisterRequest, RegisterResponse, UploadResumeResponse, GenerateEmailRequest, GenerateEmailResponse
+from utils.file_parser import parse_resume_file, validate_file_size, get_supported_extensions
 
 # Configure logging
 logging.basicConfig(
@@ -35,7 +35,7 @@ async def startup_event():
     logger.info("=" * 60)
     
     # Check database connection
-    from src.lib.postgres import check_database_connection, check_pgvector_extension
+    fromlib.postgres import check_database_connection, check_pgvector_extension
     
     if check_database_connection():
         logger.info("Database: Connected to PostgreSQL")
@@ -56,7 +56,7 @@ def read_root():
 @app.get("/health")
 def health_check():
     """Detailed health check including database status."""
-    from src.lib.postgres import check_database_connection, check_pgvector_extension
+    fromlib.postgres import check_database_connection, check_pgvector_extension
     
     db_connected = check_database_connection()
     pgvector_enabled = check_pgvector_extension() if db_connected else False

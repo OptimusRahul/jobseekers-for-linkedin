@@ -6,8 +6,8 @@ from sqlalchemy import Column, String, Text, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from pgvector.sqlalchemy import Vector
 
-from src.config import config
-from src.models.base import Base
+from config import config
+from models.base import Base
 
 class Resume(Base):
     """Resume model with vector embeddings for PostgreSQL."""

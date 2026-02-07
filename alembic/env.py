@@ -7,11 +7,11 @@ from sqlalchemy import pool
 from alembic import context
 
 # Import the shared Base and all models to register them
-from src.models.base import Base
-from src.models.user import User
-from src.models.hr import HRContact
-from src.models.resume import Resume
-from src.config import config as app_config
+from models.base import Base
+from models.user import User
+from models.hr import HRContact
+from models.resume import Resume
+from config import config as app_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
