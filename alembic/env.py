@@ -66,11 +66,11 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    configuration = config.get_section(config.config_ini_section, {})
+    configuration = config.get_section(config.config_ini_section) or {}
     
     # Add the URL from our app config if not present
-    if 'url' not in configuration and app_config.DATABASE_URL:
-        configuration['url'] = app_config.DATABASE_URL
+    if 'sqlalchemy.url' not in configuration and app_config.DATABASE_URL:
+        configuration['sqlalchemy.url'] = app_config.DATABASE_URL
     
     connectable = engine_from_config(
         configuration,
