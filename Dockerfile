@@ -1,35 +1,25 @@
-# Use Python 3.9 to match Render environment
 FROM python:3.9-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies (added gcc for some Python packages)
+# System deps
 RUN apt-get update && apt-get install -y \
     postgresql-client \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# Install python deps (cache friendly)
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project
+# Copy project
 COPY . .
 
-# Copy and set permissions for startup script
-COPY start.sh .
-RUN chmod +x start.sh
-
-# Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app/src
 
-# Expose port
 EXPOSE 8000
 
-# Run startup script
-CMD ["./start.sh"]
+# Run migrations + start FastAPI
+CMD sh -c "alembic upgrade head && python -m uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"
