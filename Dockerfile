@@ -28,4 +28,4 @@ ENV PYTHONPATH=/app/src
 EXPOSE 8000
 
 # Run migrations then start the app (Railway will provide $PORT)
-CMD sh -c "alembic upgrade head && cd src && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+CMD ["sh", "-c", "alembic upgrade head && cd src && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
