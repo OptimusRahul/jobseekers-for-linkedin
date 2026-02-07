@@ -17,9 +17,9 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app/src
+ENV PYTHONPATH=/app
 
 EXPOSE 8000
 
 # Run migrations + start FastAPI
-CMD sh -c "alembic upgrade head && python -m uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+CMD ["sh", "-c", "alembic upgrade head && python -m uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
