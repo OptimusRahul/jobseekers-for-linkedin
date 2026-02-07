@@ -7,7 +7,16 @@ import logging
 import traceback
 
 from src.config import config
-from src.services import register_user, get_user_by_phone, get_user_by_id, create_embedding, generate_email as generate_email_service, store_resume_embedding, get_resume_by_user_id, search_similar_resume
+from src.services import (
+    register_user as register_user_service, 
+    get_user_by_phone, 
+    get_user_by_id, 
+    create_embedding, 
+    generate_email as generate_email_service, 
+    store_resume_embedding, 
+    get_resume_by_user_id, 
+    search_similar_resume
+)
 from src.models.schemas import RegisterRequest, RegisterResponse, UploadResumeResponse, GenerateEmailRequest, GenerateEmailResponse
 from src.utils.file_parser import parse_resume_file, validate_file_size, get_supported_extensions
 
@@ -73,10 +82,10 @@ def health_check():
     }
 
 @app.post("/register", response_model=RegisterResponse)
-def register_user(request: RegisterRequest):
+def register(request: RegisterRequest):
     """Register a new user with phone number."""
     try:
-        user_id = register_user(
+        user_id = register_user_service(
             phone_number=request.phone_number,
             name=request.name,
             email=request.email
