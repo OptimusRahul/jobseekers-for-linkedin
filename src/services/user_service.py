@@ -2,9 +2,9 @@
 from typing import Optional
 from sqlalchemy.exc import IntegrityError
 
-from src.lib.postgres import get_db
-from src.models.user import User
-from src.utils.validators import validate_phone_number, normalize_phone_number
+from lib.postgres import get_db
+from models.user import User
+from utils.validators import validate_phone_number, normalize_phone_number
 
 def register_user(phone_number: str, name: str, email: str) -> str:
     """
