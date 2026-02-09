@@ -1,7 +1,7 @@
-"""Pydantic schemas for request/response validation."""
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field
+from uuid import UUID
 
 class RegisterRequest(BaseModel):
     """Request schema for user registration."""
@@ -9,19 +9,19 @@ class RegisterRequest(BaseModel):
 
 class RegisterResponse(BaseModel):
     """Response schema for user registration."""
-    user_id: str = Field(..., description="Generated user ID")
+    user_id: UUID = Field(..., description="Generated user ID")
 
 class UploadResumeResponse(BaseModel):
     """Response schema for resume upload."""
     message: str = Field(..., description="Success message")
-    user_id: str = Field(..., description="User ID")
+    user_id: UUID = Field(..., description="User ID")
     filename: str = Field(..., description="Original filename")
     extracted_length: int = Field(..., description="Length of extracted text")
 
 class GenerateEmailRequest(BaseModel):
     """Request schema for email generation."""
-    user_id: str = Field(..., description="User's UUID")
-    hr_id: str = Field(..., description="HR contact UUID containing job description")
+    user_id: UUID = Field(..., description="User's UUID")
+    hr_id: UUID = Field(..., description="HR contact UUID containing job description")
 
 class GenerateEmailResponse(BaseModel):
     """Response schema for email generation."""
@@ -36,7 +36,7 @@ class CreateHRContactRequest(BaseModel):
 
 class CreateHRContactResponse(BaseModel):
     """Response schema for HR contact creation."""
-    hr_id: str = Field(..., description="Generated HR contact ID")
+    hr_id: UUID = Field(..., description="Generated HR contact ID")
 
 class HRContactData(BaseModel):
     """Schema for individual HR contact data in bulk creation."""
@@ -56,12 +56,12 @@ class HRContactData(BaseModel):
 
 class BulkCreateHRContactsRequest(BaseModel):
     """Request schema for bulk HR contact creation."""
-    user_id: str = Field(..., description="User ID who owns these HR contacts")
+    user_id: UUID = Field(..., description="User ID who owns these HR contacts")
     hr_contacts: List[HRContactData] = Field(..., description="List of HR contacts to create")
 
 class BulkCreateHRContactsResponse(BaseModel):
     """Response schema for bulk HR contact creation."""
     created_count: int = Field(..., description="Number of successfully created contacts")
-    hr_ids: List[str] = Field(..., description="List of created HR contact IDs")
+    hr_ids: List[UUID] = Field(..., description="List of created HR contact IDs")
     failed_count: int = Field(..., description="Number of failed contacts")
     failed_contacts: List[dict] = Field(..., description="List of failed contacts with error details")

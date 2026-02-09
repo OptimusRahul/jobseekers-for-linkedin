@@ -103,10 +103,13 @@ def get_hr_contact_by_id(user_id: str, hr_id: str) -> Optional[HRContact]:
         HRContact object or None if not found or doesn't belong to user
     """
     with get_db() as db:
-        return db.query(HRContact).filter(
+        contact = db.query(HRContact).filter(
             HRContact.id == hr_id,
             HRContact.user_id == user_id
         ).first()
+        if contact:
+            db.expunge(contact)
+        return contact
 
 def get_all_hr_contacts(user_id: str, limit: int = 100) -> list:
     """
@@ -120,6 +123,9 @@ def get_all_hr_contacts(user_id: str, limit: int = 100) -> list:
         List of HRContact objects belonging to the user
     """
     with get_db() as db:
-        return db.query(HRContact).filter(
+        contacts = db.query(HRContact).filter(
             HRContact.user_id == user_id
         ).limit(limit).all()
+        for contact in contacts:
+            db.expunge(contact)
+        return contacts

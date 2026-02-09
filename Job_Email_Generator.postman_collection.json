@@ -125,6 +125,72 @@
 			]
 		},
 		{
+			"name": "Resolve User ID by Username",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains user_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('user_id');",
+							"    ",
+							"    // Save user_id to environment for later use",
+							"    pm.environment.set(\"user_id\", jsonData.user_id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/users/id/johndoe123",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"id",
+						"johndoe123"
+					]
+				},
+				"description": "Resolve a username to its corresponding user UUID. Useful for the frontend to get the user_id if only the username is known."
+			},
+			"response": [
+				{
+					"name": "Success Example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/id/johndoe123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"id",
+								"johndoe123"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"user_id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\"\n}"
+				}
+			]
+		},
+		{
 			"name": "Upload Resume",
 			"event": [
 				{

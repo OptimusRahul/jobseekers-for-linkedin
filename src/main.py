@@ -220,8 +220,14 @@ def create_hr_contacts(request: BulkCreateHRContactsRequest):
 def get_all_hr_contacts(user_id: str, limit: int = 100):
     """Get all HR contacts for a specific user with optional limit."""
     try:
+        # Validate user_id format
+        try:
+            user_uuid = uuid.UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid user_id format. Must be a valid UUID.")
+            
         from src.services import get_all_hr_contacts as get_all_hr_contacts_service
-        contacts = get_all_hr_contacts_service(user_id=user_id, limit=limit)
+        contacts = get_all_hr_contacts_service(user_id=str(user_uuid), limit=limit)
         
         # Convert to dict format
         return {
@@ -253,8 +259,15 @@ def get_all_hr_contacts(user_id: str, limit: int = 100):
 def get_hr_contact(hr_id: str, user_id: str):
     """Get a specific HR contact by ID for a specific user."""
     try:
+        # Validate UUID formats
+        try:
+            hr_uuid = uuid.UUID(hr_id)
+            user_uuid = uuid.UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid ID format. Both hr_id and user_id must be valid UUIDs.")
+            
         from src.services import get_hr_contact_by_id as get_hr_contact_by_id_service
-        contact = get_hr_contact_by_id_service(user_id=user_id, hr_id=hr_id)
+        contact = get_hr_contact_by_id_service(user_id=str(user_uuid), hr_id=str(hr_uuid))
         
         if not contact:
             raise HTTPException(status_code=404, detail=f"HR contact with ID {hr_id} not found or doesn't belong to user")

@@ -49,7 +49,10 @@ def get_user_by_username(username: str) -> Optional[User]:
         User object or None if not found
     """
     with get_db() as db:
-        return db.query(User).filter(User.username == username).first()
+        user = db.query(User).filter(User.username == username).first()
+        if user:
+            db.expunge(user)
+        return user
 
 def get_user_by_id(user_id: str) -> Optional[User]:
     """
@@ -62,4 +65,11 @@ def get_user_by_id(user_id: str) -> Optional[User]:
         User object or None if not found
     """
     with get_db() as db:
-        return db.query(User).filter(User.id == user_id).first()
+        try:
+            uuid_obj = uuid.UUID(user_id) if isinstance(user_id, str) else user_id
+            user = db.query(User).filter(User.id == uuid_obj).first()
+            if user:
+                db.expunge(user)
+            return user
+        except (ValueError, AttributeError):
+            return None
