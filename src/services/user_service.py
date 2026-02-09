@@ -4,42 +4,30 @@ from sqlalchemy.exc import IntegrityError
 
 from src.lib.postgres import get_db   
 from src.models.user import User
-from src.utils.validators import validate_phone_number, normalize_phone_number
+from src.models.user import User
 
-def register_user(phone_number: str, name: str, email: str) -> str:
+def register_user(username: str) -> str:
     """
     Register a new user.
     
     Args:
-        phone_number: User's phone number
-        name: User's name
-        email: User's email
+        username: User's username
         
     Returns:
         User ID as string
         
     Raises:
-        ValueError: If phone number is invalid or user already exists
+        ValueError: If user already exists
     """
-    # Validate phone number
-    if not validate_phone_number(phone_number):
-        raise ValueError("Invalid phone number format. Use format: +1234567890")
-    
-    # Normalize phone number
-    normalized_phone = normalize_phone_number(phone_number)
-    
-    # Create user
     with get_db() as db:
         # Check if user already exists
-        existing_user = db.query(User).filter(User.phone_number == normalized_phone).first()
+        existing_user = db.query(User).filter(User.username == username).first()
         if existing_user:
-            raise ValueError("User with this phone number already exists")
+            raise ValueError("User with this username already exists")
         
         # Create new user
         user = User(
-            phone_number=normalized_phone,
-            name=name,
-            email=email
+            username=username
         )
         
         try:
@@ -48,23 +36,20 @@ def register_user(phone_number: str, name: str, email: str) -> str:
             db.refresh(user)
             return str(user.id)
         except IntegrityError:
-            raise ValueError("User with this phone number already exists")
+            raise ValueError("User with this username already exists")
 
-def get_user_by_phone(phone_number: str) -> Optional[User]:
+def get_user_by_username(username: str) -> Optional[User]:
     """
-    Get user by phone number.
+    Get user by username.
     
     Args:
-        phone_number: User's phone number
+        username: User's username
         
     Returns:
         User object or None if not found
     """
-    # Normalize phone number
-    normalized_phone = normalize_phone_number(phone_number)
-    
     with get_db() as db:
-        return db.query(User).filter(User.phone_number == normalized_phone).first()
+        return db.query(User).filter(User.username == username).first()
 
 def get_user_by_id(user_id: str) -> Optional[User]:
     """

@@ -7,9 +7,8 @@ from pathlib import Path
 BASE_URL = "http://localhost:8000"
 
 # Test data
-test_phone = "+1234567890"
-test_name = "John Doe"
-test_email = "john.doe@example.com"
+# Test data
+test_username = "johndoe123"
 test_user_id = None  # Will be set after registration
 
 test_resume = """
@@ -67,9 +66,7 @@ def test_register():
     response = requests.post(
         f"{BASE_URL}/register",
         json={
-            "phone_number": test_phone,
-            "name": test_name,
-            "email": test_email
+            "username": test_username
         }
     )
     print(f"Status: {response.status_code}")
@@ -137,7 +134,7 @@ def test_generate_email():
     response = requests.post(
         f"{BASE_URL}/gen-email",
         json={
-            "phone_number": test_phone,
+            "username": test_username,
             "job_description": test_job_description
         }
     )

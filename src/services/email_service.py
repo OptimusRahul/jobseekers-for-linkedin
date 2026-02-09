@@ -2,40 +2,38 @@
 from typing import Dict
 
 from src.services import user_service, openai_service, vector_service
+from typing import Dict, Any
 
-def generate_email(phone_number: str, job_description: str) -> Dict[str, str]:
+from src.services.user_service import get_user_by_username
+from src.services.vector_service import get_resume_by_user_id
+from src.services.openai_service import generate_email
+
+def generate_email(username: str, job_description: str) -> Dict[str, Any]:
     """
-    Generate personalized job application email.
-    
-    This is the main orchestration function that:
-    1. Fetches user from Postgres by phone number
-    2. Generates JD embedding using OpenAI
-    3. Retrieves resume from PostgreSQL (by user_id)
-    4. Calls OpenAI to generate email with resume + JD
-    5. Returns formatted email
+    Generate email for a user based on job description.
     
     Args:
-        phone_number: User's phone number
+        username: User's username
         job_description: Job description text
         
     Returns:
-        Dictionary with 'subject' and 'body' keys
+        Dictionary with subject and body
         
     Raises:
-        ValueError: If user not found or resume not found
+        ValueError: If user or resume not found
     """
-    # Step 1: Get user from Postgres
-    user = user_service.get_user_by_phone(phone_number)
+    # Get user
+    user = get_user_by_username(username)
     if not user:
-        raise ValueError(f"User not found with phone number: {phone_number}")
+        raise ValueError(f"User with username {username} not found")
     
     # Extract user_id while user object is still bound to session
     user_id = str(user.id)
     
     # Step 2: Get user's resume from PostgreSQL
-    resume_data = vector_service.get_resume_by_user_id(user_id)
+    resume_data = get_resume_by_user_id(user_id)
     if not resume_data or not resume_data.get("resume_text"):
-        raise ValueError(f"Resume not found for user: {phone_number}")
+        raise ValueError(f"Resume not found for user: {username}")
     
     resume_text = resume_data["resume_text"]
     

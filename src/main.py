@@ -9,7 +9,7 @@ import traceback
 from src.config import config
 from src.services import (
     register_user as register_user_service, 
-    get_user_by_phone, 
+    get_user_by_username, 
     get_user_by_id, 
     create_embedding, 
     generate_email as generate_email_service, 
@@ -83,12 +83,10 @@ def health_check():
 
 @app.post("/register", response_model=RegisterResponse)
 def register(request: RegisterRequest):
-    """Register a new user with phone number."""
+    """Register a new user with username."""
     try:
         user_id = register_user_service(
-            phone_number=request.phone_number,
-            name=request.name,
-            email=request.email
+            username=request.username
         )
         return RegisterResponse(user_id=user_id)
     except ValueError as e:
@@ -170,7 +168,7 @@ def generate_email(request: GenerateEmailRequest):
     """Generate personalized job application email."""
     try:
         result = generate_email_service(
-            phone_number=request.phone_number,
+            username=request.username,
             job_description=request.job_description
         )
         return GenerateEmailResponse(subject=result["subject"], body=result["body"])

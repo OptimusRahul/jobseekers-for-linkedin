@@ -3,9 +3,7 @@ from pydantic import BaseModel, Field
 
 class RegisterRequest(BaseModel):
     """Request schema for user registration."""
-    phone_number: str = Field(..., description="User's phone number")
-    name: str = Field(..., description="User's full name")
-    email: str = Field(..., description="User's email address")
+    username: str = Field(..., description="User's unique username")
 
 class RegisterResponse(BaseModel):
     """Response schema for user registration."""
@@ -20,7 +18,7 @@ class UploadResumeResponse(BaseModel):
 
 class GenerateEmailRequest(BaseModel):
     """Request schema for email generation."""
-    phone_number: str = Field(..., description="User's phone number")
+    username: str = Field(..., description="User's username")
     job_description: str = Field(..., description="Job description text")
 
 class GenerateEmailResponse(BaseModel):

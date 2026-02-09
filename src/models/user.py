@@ -11,10 +11,8 @@ class User(Base):
     __tablename__ = "users"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    phone_number = Column(String, unique=True, nullable=False, index=True)
-    name = Column(String, nullable=False)
-    email = Column(String, nullable=False)
+    username = Column(String, unique=True, nullable=False, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     def __repr__(self):
-        return f"<User(id={self.id}, phone={self.phone_number}, name={self.name})>"
+        return f"<User(id={self.id}, username={self.username})>"
