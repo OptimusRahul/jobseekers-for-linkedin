@@ -188,14 +188,14 @@ def generate_email(request: GenerateEmailRequest):
         logger.error(f"Email generation failed: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Email generation failed: {str(e)}")
 
-@app.post("/create-hr-contacts", response_model=BulkCreateHRContactsResponse)
+@app.post("/hr-contacts", response_model=BulkCreateHRContactsResponse)
 def create_hr_contacts(request: BulkCreateHRContactsRequest):
-    """Create one or more HR contact entries."""
+    """Create one or more HR contact entries for a specific user."""
     try:
         # Convert Pydantic models to dictionaries
         hr_contacts_data = [contact.dict() for contact in request.hr_contacts]
         
-        result = create_hr_contacts_service(hr_contacts_data)
+        result = create_hr_contacts_service(user_id=request.user_id, hr_contacts=hr_contacts_data)
         return BulkCreateHRContactsResponse(**result)
     except ValueError as e:
         logger.warning(f"HR contact creation validation error: {str(e)}")
@@ -203,6 +203,56 @@ def create_hr_contacts(request: BulkCreateHRContactsRequest):
     except Exception as e:
         logger.error(f"HR contact creation failed: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"HR contact creation failed: {str(e)}")
+
+@app.get("/hr-contacts")
+def get_all_hr_contacts(user_id: str, limit: int = 100):
+    """Get all HR contacts for a specific user with optional limit."""
+    try:
+        from src.services import get_all_hr_contacts as get_all_hr_contacts_service
+        contacts = get_all_hr_contacts_service(user_id=user_id, limit=limit)
+        
+        # Convert to dict format
+        return {
+            "count": len(contacts),
+            "contacts": [
+                {
+                    "id": str(contact.id),
+                    "user_id": str(contact.user_id),
+                    "email": contact.email,
+                    "phone": contact.phone,
+                    "job_description": contact.job_description,
+                    "created_at": contact.created_at.isoformat()
+                }
+                for contact in contacts
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Failed to retrieve HR contacts: {str(e)}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve HR contacts: {str(e)}")
+
+@app.get("/hr-contacts/{hr_id}")
+def get_hr_contact(hr_id: str, user_id: str):
+    """Get a specific HR contact by ID for a specific user."""
+    try:
+        from src.services import get_hr_contact_by_id as get_hr_contact_by_id_service
+        contact = get_hr_contact_by_id_service(user_id=user_id, hr_id=hr_id)
+        
+        if not contact:
+            raise HTTPException(status_code=404, detail=f"HR contact with ID {hr_id} not found or doesn't belong to user")
+        
+        return {
+            "id": str(contact.id),
+            "user_id": str(contact.user_id),
+            "email": contact.email,
+            "phone": contact.phone,
+            "job_description": contact.job_description,
+            "created_at": contact.created_at.isoformat()
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to retrieve HR contact: {str(e)}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve HR contact: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,15 +1,17 @@
 """HR contact service for storing HR information."""
 from typing import Optional
 from sqlalchemy.exc import IntegrityError
+import uuid
 
 from src.lib.postgres import get_db
 from src.models.hr import HRContact
 
-def create_hr_contacts(hr_contacts: list) -> dict:
+def create_hr_contacts(user_id: str, hr_contacts: list) -> dict:
     """
-    Create one or more HR contact entries.
+    Create one or more HR contact entries for a specific user.
     
     Args:
+        user_id: User's UUID
         hr_contacts: List of dictionaries with keys: email, job_description, phone (optional)
                     Example: [{"email": "hr@company.com", "job_description": "...", "phone": "+123"}]
         
@@ -21,6 +23,12 @@ def create_hr_contacts(hr_contacts: list) -> dict:
     """
     if not hr_contacts or not isinstance(hr_contacts, list):
         raise ValueError("hr_contacts must be a non-empty list")
+    
+    # Validate user_id
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except (ValueError, AttributeError):
+        raise ValueError("Invalid user_id format")
     
     created_ids = []
     failed_contacts = []
@@ -41,8 +49,9 @@ def create_hr_contacts(hr_contacts: list) -> dict:
                     failed_contacts.append({"index": idx, "error": "Job description cannot be empty"})
                     continue
                 
-                # Create HR contact
+                # Create HR contact with user_id
                 hr_contact = HRContact(
+                    user_id=user_uuid,
                     email=email,
                     phone=phone,
                     job_description=job_description
@@ -68,28 +77,35 @@ def create_hr_contacts(hr_contacts: list) -> dict:
         "failed_contacts": failed_contacts
     }
 
-def get_hr_contact_by_id(hr_id: str) -> Optional[HRContact]:
+def get_hr_contact_by_id(user_id: str, hr_id: str) -> Optional[HRContact]:
     """
-    Get HR contact by ID.
+    Get HR contact by ID for a specific user.
     
     Args:
+        user_id: User's UUID
         hr_id: HR contact UUID
         
     Returns:
-        HRContact object or None if not found
+        HRContact object or None if not found or doesn't belong to user
     """
     with get_db() as db:
-        return db.query(HRContact).filter(HRContact.id == hr_id).first()
+        return db.query(HRContact).filter(
+            HRContact.id == hr_id,
+            HRContact.user_id == user_id
+        ).first()
 
-def get_all_hr_contacts(limit: int = 100) -> list:
+def get_all_hr_contacts(user_id: str, limit: int = 100) -> list:
     """
-    Get all HR contacts.
+    Get all HR contacts for a specific user.
     
     Args:
+        user_id: User's UUID
         limit: Maximum number of contacts to return
         
     Returns:
-        List of HRContact objects
+        List of HRContact objects belonging to the user
     """
     with get_db() as db:
-        return db.query(HRContact).limit(limit).all()
+        return db.query(HRContact).filter(
+            HRContact.user_id == user_id
+        ).limit(limit).all()

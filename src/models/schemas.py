@@ -45,6 +45,7 @@ class HRContactData(BaseModel):
 
 class BulkCreateHRContactsRequest(BaseModel):
     """Request schema for bulk HR contact creation."""
+    user_id: str = Field(..., description="User ID who owns these HR contacts")
     hr_contacts: List[HRContactData] = Field(..., description="List of HR contacts to create")
 
 class BulkCreateHRContactsResponse(BaseModel):
