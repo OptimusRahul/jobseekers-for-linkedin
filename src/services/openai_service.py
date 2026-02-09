@@ -1,6 +1,6 @@
 """OpenAI service for embeddings and chat completion."""
 import json
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from src.lib.openai_client import get_openai_client
 from src.config import config
@@ -25,13 +25,22 @@ def create_embedding(text: str) -> List[float]:
     
     return response.data[0].embedding
 
-def generate_email(resume_text: str, job_description: str) -> Dict[str, str]:
+def generate_email(
+    resume_text: str, 
+    job_description: str,
+    hr_name: Optional[str] = None,
+    hr_title: Optional[str] = None,
+    company: Optional[str] = None
+) -> Dict[str, str]:
     """
     Generate personalized email using OpenAI chat completion.
     
     Args:
         resume_text: Candidate's resume text
         job_description: Job description text
+        hr_name: HR contact name (optional)
+        hr_title: HR contact title (optional)
+        company: Company name (optional)
         
     Returns:
         Dictionary with 'subject' and 'body' keys
@@ -39,7 +48,13 @@ def generate_email(resume_text: str, job_description: str) -> Dict[str, str]:
     client = get_openai_client()
     
     # Create prompt
-    prompt = create_email_prompt(resume_text, job_description)
+    prompt = create_email_prompt(
+        resume_text=resume_text, 
+        job_description=job_description,
+        hr_name=hr_name,
+        hr_title=hr_title,
+        company=company
+    )
     
     # Call OpenAI
     response = client.chat.completions.create(

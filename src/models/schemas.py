@@ -1,4 +1,5 @@
 """Pydantic schemas for request/response validation."""
+from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field
 
@@ -19,8 +20,8 @@ class UploadResumeResponse(BaseModel):
 
 class GenerateEmailRequest(BaseModel):
     """Request schema for email generation."""
-    username: str = Field(..., description="User's username")
-    job_description: str = Field(..., description="Job description text")
+    user_id: str = Field(..., description="User's UUID")
+    hr_id: str = Field(..., description="HR contact UUID containing job description")
 
 class GenerateEmailResponse(BaseModel):
     """Response schema for email generation."""
@@ -39,9 +40,19 @@ class CreateHRContactResponse(BaseModel):
 
 class HRContactData(BaseModel):
     """Schema for individual HR contact data in bulk creation."""
-    email: str = Field(..., description="HR contact email address")
-    phone: Optional[str] = Field(None, description="HR contact phone number (optional)")
-    job_description: str = Field(..., description="Job description text")
+    name: Optional[str] = Field(None, description="HR contact name")
+    title: Optional[str] = Field(None, description="HR contact title/headline")
+    company: Optional[str] = Field(None, description="HR contact company")
+    profile_url: Optional[str] = Field(None, alias="profileUrl", description="LinkedIn profile URL")
+    post_url: Optional[str] = Field(None, alias="postUrl", description="LinkedIn post URL")
+    email: Optional[str] = Field(None, description="HR contact email address")
+    job_link: Optional[str] = Field(None, alias="jobLink", description="Job listing URL")
+    post_preview: Optional[str] = Field(None, alias="postPreview", description="Preview text from the post")
+    extracted_at: Optional[datetime] = Field(None, alias="extractedAt", description="When the data was extracted")
+    matched_keywords: List[str] = Field(default_factory=list, alias="matchedKeywords", description="Keywords matched in the post")
+
+    class Config:
+        populate_by_name = True
 
 class BulkCreateHRContactsRequest(BaseModel):
     """Request schema for bulk HR contact creation."""

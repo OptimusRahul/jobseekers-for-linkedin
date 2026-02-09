@@ -9,13 +9,10 @@ import traceback
 from src.config import config
 from src.services import (
     register_user as register_user_service, 
-    get_user_by_username, 
     get_user_by_id, 
     create_embedding, 
     generate_email as generate_email_service, 
     store_resume_embedding, 
-    get_resume_by_user_id, 
-    search_similar_resume,
     create_hr_contacts as create_hr_contacts_service
 )
 from src.models.schemas import (
@@ -174,11 +171,11 @@ async def upload_resume(
 
 @app.post("/gen-email", response_model=GenerateEmailResponse)
 def generate_email(request: GenerateEmailRequest):
-    """Generate personalized job application email."""
+    """Generate personalized job application email using HR contact job description."""
     try:
         result = generate_email_service(
-            username=request.username,
-            job_description=request.job_description
+            user_id=request.user_id,
+            hr_id=request.hr_id
         )
         return GenerateEmailResponse(subject=result["subject"], body=result["body"])
     except ValueError as e:
@@ -218,9 +215,16 @@ def get_all_hr_contacts(user_id: str, limit: int = 100):
                 {
                     "id": str(contact.id),
                     "user_id": str(contact.user_id),
+                    "name": contact.name,
+                    "title": contact.title,
+                    "company": contact.company,
+                    "profileUrl": contact.profile_url,
+                    "postUrl": contact.post_url,
                     "email": contact.email,
-                    "phone": contact.phone,
-                    "job_description": contact.job_description,
+                    "jobLink": contact.job_link,
+                    "postPreview": contact.post_preview,
+                    "matchedKeywords": contact.matched_keywords,
+                    "extractedAt": contact.extracted_at.isoformat() if contact.extracted_at else None,
                     "created_at": contact.created_at.isoformat()
                 }
                 for contact in contacts
@@ -243,9 +247,16 @@ def get_hr_contact(hr_id: str, user_id: str):
         return {
             "id": str(contact.id),
             "user_id": str(contact.user_id),
+            "name": contact.name,
+            "title": contact.title,
+            "company": contact.company,
+            "profileUrl": contact.profile_url,
+            "postUrl": contact.post_url,
             "email": contact.email,
-            "phone": contact.phone,
-            "job_description": contact.job_description,
+            "jobLink": contact.job_link,
+            "postPreview": contact.post_preview,
+            "matchedKeywords": contact.matched_keywords,
+            "extractedAt": contact.extracted_at.isoformat() if contact.extracted_at else None,
             "created_at": contact.created_at.isoformat()
         }
     except HTTPException:
