@@ -102,6 +102,21 @@ def register(request: RegisterRequest):
         logger.error(f"Registration failed: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
+@app.get("/users/id/{username}", response_model=RegisterResponse)
+def get_user_id(username: str):
+    """Resolve a username to its user UUID."""
+    try:
+        from src.services.user_service import get_user_by_username as get_user_by_username_service
+        user = get_user_by_username_service(username)
+        if not user:
+            raise HTTPException(status_code=404, detail=f"User '{username}' not found")
+        return RegisterResponse(user_id=str(user.id))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to resolve username '{username}': {str(e)}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to resolve username: {str(e)}")
+
 @app.post("/upload-resume", response_model=UploadResumeResponse)
 async def upload_resume(
     user_id: str = Form(..., description="User ID from registration"),

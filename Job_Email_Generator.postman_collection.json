@@ -1,0 +1,574 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Job Email Generator API",
+		"description": "Complete API collection for the Job Email Generator backend - AI-powered personalized job application emails using OpenAI and pgvector",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has status field\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('status');",
+							"    pm.expect(jsonData.status).to.eql('healthy');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Health check endpoint to verify the API is running"
+			},
+			"response": []
+		},
+		{
+			"name": "Register User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains user_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('user_id');",
+							"    ",
+							"    // Save user_id to environment for later use",
+							"    pm.environment.set(\"user_id\", jsonData.user_id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"johndoe123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"register"
+					]
+				},
+				"description": "Register a new user with a unique username. Returns a unique user_id."
+			},
+			"response": [
+				{
+					"name": "Success Example",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"johndoe123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"user_id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Upload Resume",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains required fields\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql('success');",
+							"    pm.expect(jsonData).to.have.property('user_id');",
+							"    pm.expect(jsonData).to.have.property('filename');",
+							"    pm.expect(jsonData).to.have.property('extracted_length');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "{{user_id}}",
+							"description": "User ID from registration",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"description": "Resume file (PDF, DOCX, or TXT)",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/upload-resume",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"upload-resume"
+					]
+				},
+				"description": "Upload user's resume file (PDF, DOCX, DOC, or TXT). The system extracts text, generates vector embeddings using OpenAI, and stores them in PostgreSQL with pgvector.\n\nSupported formats:\n- PDF (.pdf)\n- Word (.docx, .doc)\n- Text (.txt)\n\nMax file size: 10MB"
+			},
+			"response": [
+				{
+					"name": "Success Example",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user_id",
+									"value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "resume.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/upload-resume",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"upload-resume"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"success\",\n    \"user_id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"filename\": \"resume.pdf\",\n    \"extracted_length\": 1245\n}"
+				}
+			]
+		},
+		{
+			"name": "Generate Email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains subject and body\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('subject');",
+							"    pm.expect(jsonData).to.have.property('body');",
+							"    pm.expect(jsonData.subject).to.not.be.empty;",
+							"    pm.expect(jsonData.body).to.not.be.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": \"{{user_id}}\",\n    \"hr_id\": \"your-hr-contact-id-here\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/gen-email",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"gen-email"
+					]
+				},
+				"description": "Generate a personalized job application email using the user's resume and HR contact job description. Fetches job description from HR contacts database."
+			},
+			"response": [
+				{
+					"name": "Success Example",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"{{user_id}}\",\n    \"hr_id\": \"your-hr-contact-id-here\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/gen-email",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"gen-email"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"subject\": \"Application for Senior Backend Engineer Position\",\n    \"body\": \"Dear Hiring Manager,\\n\\nI am writing to express my strong interest in the Senior Backend Engineer position at your company...\\n\\nBest regards,\\nJohn Doe\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Create HR Contacts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains created_count and hr_ids\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('created_count');",
+							"    pm.expect(jsonData).to.have.property('hr_ids');",
+							"    pm.expect(jsonData).to.have.property('failed_count');",
+							"    pm.expect(jsonData).to.have.property('failed_contacts');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": \"{{user_id}}\",\n    \"hr_contacts\": [\n        {\n            \"name\": \"Harshit Kumar\",\n            \"title\": \"46k followers 1 M Follow on Instagram-Harshitrajput0744...\",\n            \"company\": \"\",\n            \"profileUrl\": \"https://www.linkedin.com/in/harshit-kumar-18a541206/\",\n            \"postUrl\": \"\",\n            \"email\": \"\",\n            \"jobLink\": \"https://www.linkedin.com/jobs/view/4370541028/\",\n            \"postPreview\": \"great opportunity Hiring alert for fraud investigator Apply now\",\n            \"extractedAt\": \"2026-02-09T20:01:12.297Z\",\n            \"matchedKeywords\": []\n        },\n        {\n            \"name\": \"Deepa Yadav\",\n            \"title\": \"Bench Sale's Recruiter\",\n            \"company\": \"\",\n            \"profileUrl\": \"https://www.linkedin.com/in/deepa-yadav-7a119226a/\",\n            \"postUrl\": \"\",\n            \"email\": \"mabdul@acetechcorp.corp\",\n            \"jobLink\": \"https://www.linkedin.com/jobs/view/4370564074/\",\n            \"postPreview\": \"We are Hiring US IT Recruiters in Madhapur Location, If any body Interested please share resumes to mabdul@acetechcorp.corp or Apply for the Job Posting.\",\n            \"extractedAt\": \"2026-02-09T20:01:12.299Z\",\n            \"matchedKeywords\": [\"Hiring\", \"Recruiters\"]\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/hr-contacts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"hr-contacts"
+					]
+				},
+				"description": "Create one or more HR contact entries for a specific user. Supports expanded LinkedIn data including name, title, profileUrl, and postPreview."
+			},
+			"response": [
+				{
+					"name": "Success Example",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"{{user_id}}\",\n    \"hr_contacts\": [\n        {\n            \"email\": \"hr@company.com\",\n            \"phone\": \"+1234567890\",\n            \"job_description\": \"Senior Backend Engineer position...\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/hr-contacts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"hr-contacts"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"created_count\": 1,\n    \"hr_ids\": [\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\"],\n    \"failed_count\": 0,\n    \"failed_contacts\": []\n}"
+				}
+			]
+		},
+		{
+			"name": "Get All HR Contacts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains count and contacts\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('count');",
+							"    pm.expect(jsonData).to.have.property('contacts');",
+							"    pm.expect(jsonData.contacts).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/hr-contacts?user_id={{user_id}}&limit=100",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"hr-contacts"
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "{{user_id}}",
+							"description": "User ID to filter HR contacts (required)"
+						},
+						{
+							"key": "limit",
+							"value": "100",
+							"description": "Maximum number of contacts to return (default: 100)"
+						}
+					]
+				},
+				"description": "Retrieve all HR contacts for a specific user with an optional limit parameter."
+			},
+			"response": [
+				{
+					"name": "Success Example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/hr-contacts?user_id={{user_id}}&limit=100",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"hr-contacts"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "limit",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"count\": 2,\n    \"contacts\": [\n        {\n            \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n            \"user_id\": \"{{user_id}}\",\n            \"name\": \"Deepa Yadav\",\n            \"title\": \"Bench Sale's Recruiter\",\n            \"company\": \"\",\n            \"profileUrl\": \"https://www.linkedin.com/in/deepa-yadav-7a119226a/\",\n            \"postUrl\": \"\",\n            \"email\": \"mabdul@acetechcorp.corp\",\n            \"jobLink\": \"https://www.linkedin.com/jobs/view/4370564074/\",\n            \"postPreview\": \"We are Hiring US IT Recruiters...\",\n            \"matchedKeywords\": [\"Hiring\", \"Recruiter\"],\n            \"extractedAt\": \"2026-02-09T20:01:12.299Z\",\n            \"created_at\": \"2026-02-10T00:00:00\"\n        },\n        {\n            \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n            \"user_id\": \"{{user_id}}\",\n            \"name\": \"Hiya Chugh\",\n            \"title\": \"Neuromarketer & Growth Consultant\",\n            \"company\": \"\",\n            \"profileUrl\": \"https://www.linkedin.com/in/hiya-chugh/\",\n            \"postUrl\": \"\",\n            \"email\": \"\",\n            \"jobLink\": \"https://www.linkedin.com/jobs/view/4370442367/\",\n            \"postPreview\": \"We’re #hiring at Vee Group...\",\n            \"matchedKeywords\": [],\n            \"extractedAt\": \"2026-02-09T20:01:12.298Z\",\n            \"created_at\": \"2026-02-10T00:05:00\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get HR Contact by ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains HR contact details\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('id');",
+							"    pm.expect(jsonData).to.have.property('name');",
+							"    pm.expect(jsonData).to.have.property('postPreview');",
+							"    pm.expect(jsonData).to.have.property('created_at');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/hr-contacts/a1b2c3d4-e5f6-7890-abcd-ef1234567890?user_id={{user_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"hr-contacts",
+						"a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "{{user_id}}",
+							"description": "User ID who owns this HR contact (required)"
+						}
+					]
+				},
+				"description": "Retrieve a specific HR contact by its UUID for a specific user."
+			},
+			"response": [
+				{
+					"name": "Success Example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/hr-contacts/a1b2c3d4-e5f6-7890-abcd-ef1234567890?user_id={{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"hr-contacts",
+								"a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"user_id\": \"{{user_id}}\",\n    \"name\": \"Deepa Yadav\",\n    \"title\": \"Bench Sale's Recruiter\",\n    \"company\": \"\",\n    \"profileUrl\": \"https://www.linkedin.com/in/deepa-yadav-7a119226a/\",\n    \"postUrl\": \"\",\n    \"email\": \"mabdul@acetechcorp.corp\",\n    \"jobLink\": \"https://www.linkedin.com/jobs/view/4370564074/\",\n    \"postPreview\": \"We are Hiring US IT Recruiters...\",\n    \"matchedKeywords\": [\"Hiring\", \"Recruiter\"],\n    \"extractedAt\": \"2026-02-09T20:01:12.299Z\",\n    \"created_at\": \"2026-02-10T00:00:00\"\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "your-user-id-here",
+			"type": "string"
+		}
+	]
+}
