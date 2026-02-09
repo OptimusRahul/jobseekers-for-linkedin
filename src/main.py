@@ -15,9 +15,18 @@ from src.services import (
     generate_email as generate_email_service, 
     store_resume_embedding, 
     get_resume_by_user_id, 
-    search_similar_resume
+    search_similar_resume,
+    create_hr_contacts as create_hr_contacts_service
 )
-from src.models.schemas import RegisterRequest, RegisterResponse, UploadResumeResponse, GenerateEmailRequest, GenerateEmailResponse
+from src.models.schemas import (
+    RegisterRequest, 
+    RegisterResponse, 
+    UploadResumeResponse, 
+    GenerateEmailRequest, 
+    GenerateEmailResponse,
+    BulkCreateHRContactsRequest,
+    BulkCreateHRContactsResponse
+)
 from src.utils.file_parser import parse_resume_file, validate_file_size, get_supported_extensions
 
 # Configure logging
@@ -178,6 +187,22 @@ def generate_email(request: GenerateEmailRequest):
     except Exception as e:
         logger.error(f"Email generation failed: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Email generation failed: {str(e)}")
+
+@app.post("/create-hr-contacts", response_model=BulkCreateHRContactsResponse)
+def create_hr_contacts(request: BulkCreateHRContactsRequest):
+    """Create one or more HR contact entries."""
+    try:
+        # Convert Pydantic models to dictionaries
+        hr_contacts_data = [contact.dict() for contact in request.hr_contacts]
+        
+        result = create_hr_contacts_service(hr_contacts_data)
+        return BulkCreateHRContactsResponse(**result)
+    except ValueError as e:
+        logger.warning(f"HR contact creation validation error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"HR contact creation failed: {str(e)}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"HR contact creation failed: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
